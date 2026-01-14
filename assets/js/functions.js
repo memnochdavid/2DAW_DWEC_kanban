@@ -59,19 +59,34 @@ export const renderBoard = () => {
         rowsContainer.className = "table-row-container";
         column.appendChild(rowsContainer);
 
-        //carga las filas
+        //nueva tarea
+        const createRowElement = (rowText, rowIndex) => {
+            const row = document.createElement("div");
+            row.className = "table-row";
+            row.innerText = rowText;
+
+            row.addEventListener("dblclick", () => {
+                let newRowText = prompt("Nuevo", rowText);
+                if (newRowText !== null && newRowText.trim() !== "") {
+                    col.rows[rowIndex] = newRowText;
+                    localStorage.setItem('elements', JSON.stringify(appStatus.lsElements));
+                    
+                    row.innerText = newRowText;
+                    rowText = newRowText;
+                }
+            });
+            return row;
+        };
+
+        //carga las filas existentes
         if (col.rows && Array.isArray(col.rows)) {
-            col.rows.forEach(rowText => {
-                const row = document.createElement("div");
-                row.className = "table-row";
-                row.innerText = rowText;
+            col.rows.forEach((rowText, rowIndex) => {
+                const row = createRowElement(rowText, rowIndex);
                 rowsContainer.appendChild(row);
             });
         }
 
-
-
-        //sólo la primera columna
+        //sólo la primera columna tiene botón de añadir
         if(index === 0){
             const rowButtonContainer = document.createElement("div");
             rowButtonContainer.className = "table-row-button";
@@ -82,24 +97,20 @@ export const renderBoard = () => {
 
 
             newRowBtn.addEventListener("click", () => {
-
-
-
-                //añade la nueva fila
+                //añade la nueva fila al modelo
                 if (!col.rows) col.rows = [];
                 const newRowText = "Nueva Tarea";
                 col.rows.push(newRowText);
                 
                 localStorage.setItem('elements', JSON.stringify(appStatus.lsElements));
 
-                const newRow = document.createElement("div");
-                newRow.className = "table-row";
-                newRow.innerText = newRowText;
+                //nueva fila
+                const newRowIndex = col.rows.length - 1;
+                const newRow = createRowElement(newRowText, newRowIndex);
                 rowsContainer.appendChild(newRow);
             });
 
             rowButtonContainer.appendChild(newRowBtn);
-
             column.appendChild(rowButtonContainer);
         }
 
