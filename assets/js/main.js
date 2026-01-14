@@ -2,6 +2,7 @@
 import { includeHTML, renderBoard, appStatus } from './functions.js';
 
 
+let refreshMenuData = () => {};
 
 //lógica del menú de preferencias
 const initMenuLogic = () => {
@@ -12,36 +13,42 @@ const initMenuLogic = () => {
     const btnSave = document.getElementById('btn-save');
     const btnClear = document.getElementById('btn-clear');
 
-    let currentColumns = [...appStatus.lsElements];
-
-    numInput.value = currentColumns.length;
+    let currentColumns = [];
 
     //pinta los inputs indicados
     const renderInputs = () => {
         container.innerHTML = '';
 
-        currentColumns.forEach((colName, index) => {
+        currentColumns.forEach((col, index) => {
             const input = document.createElement('input');
             input.type = 'text';
             input.className = 'column-input';
             input.placeholder = `Columna ${index + 1}`;
-            input.value = colName;
+            input.value = col.title;
             
             //actualiza el array
             input.addEventListener('input', (e) => {
-                currentColumns[index] = e.target.value;
+                currentColumns[index].title = e.target.value;
             });
             
             container.appendChild(input);
         });
     };
 
+    //refrescar los datos del menú desde el estado global
+    refreshMenuData = () => {
+        // Deep copy to avoid mutating appStatus directly before save
+        currentColumns = JSON.parse(JSON.stringify(appStatus.lsElements));
+        numInput.value = currentColumns.length;
+        renderInputs();
+    };
+
     //render inicial
-    renderInputs();
+    refreshMenuData();
 
     //más
     btnInc.addEventListener('click', () => {
-        currentColumns.push(''); //nueva columna
+        currentColumns.push({ title: '', rows: [] }); //nueva columna
         numInput.value = currentColumns.length;
         renderInputs();
     });
@@ -61,7 +68,6 @@ const initMenuLogic = () => {
         appStatus.lsElements = currentColumns;
         localStorage.setItem('elements', JSON.stringify(appStatus.lsElements));
         
-        console.log('Guardado:', appStatus.lsElements);
         alert('Configuración guardada.');
         
         renderBoard();
@@ -116,6 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         } else {
             sidebar.classList.add('active'); 
+            refreshMenuData(); //actualiza los datos al reabrir el menú
         }
     });
     
