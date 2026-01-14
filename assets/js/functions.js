@@ -25,19 +25,34 @@ export const renderBoard = () => {
     const container = document.getElementById("container-main");
     container.innerHTML = "";
 
-    appStatus.lsElements.forEach((colName) => {
+    appStatus.lsElements.forEach((colName, index) => {
         const column = document.createElement("div");
         column.className = "table-column";
         // column.id = `${colName}`;
         column.innerHTML = '';
 
         const row = document.createElement("div");
-        row.className = "table-row table-row-header";
+        row.className = "table-row-header";
 
         const title = document.createElement("h3");
         title.innerHTML = `${colName}`;
         row.appendChild(title);
         column.appendChild(row);
+
+        //sólo la primera columna
+        if(index === 0){
+            const newRowBtn = document.createElement("button");
+            newRowBtn.className = "btn btn-counter";
+            newRowBtn.innerHTML = "+";
+
+
+            newRowBtn.addEventListener("click", () => {
+                const newRow = document.createElement("div");
+                newRow.className = "table-row";
+                column.appendChild(newRow);
+            });
+            column.appendChild(newRowBtn);
+        }
 
         container.appendChild(column);
 
