@@ -32,10 +32,13 @@ export const renderBoard = () => {
         column.innerHTML = '';
 
         const row = document.createElement("div");
-        row.className = "table-row";
-        row.innerHTML = `${colName}`;
+        row.className = "table-row table-row-header";
 
+        const title = document.createElement("h3");
+        title.innerHTML = `${colName}`;
+        row.appendChild(title);
         column.appendChild(row);
+
         container.appendChild(column);
 
     });

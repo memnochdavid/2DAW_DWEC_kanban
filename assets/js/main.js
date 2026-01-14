@@ -83,6 +83,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.getElementById('sidebar');
     let menuLoaded = false;
 
+    renderBoard();
+
     //cerrar menú
     const closeMenu = () => {
         sidebar.classList.remove('active');
