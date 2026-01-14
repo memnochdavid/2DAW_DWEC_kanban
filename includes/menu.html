@@ -1,5 +1,26 @@
 <div id="menu">
-    <form action="">
-        <input type="text" name="search" id="search" placeholder="Search">
-    </form>
+    <div>
+        <h3>Preferencias</h3>
+        <button id="btn-close" class="btn btn-red btn-close">&times;</button>
+    </div>
+
+    <div class="config-container">
+
+        <div class="counter-wrapper">
+            <label>Columnas</label>
+            <div class="counter-controls">
+                <button type="button" id="btn-dec" class="btn btn-counter">-</button>
+                <input type="number" id="num-columns" value="0" readonly>
+                <button type="button" id="btn-inc" class="btn btn-counter">+</button>
+            </div>
+        </div>
+
+        <div id="columns-container" class="columns-list"></div>
+
+        <div class="config-btns">
+            <button id="btn-save" class="btn btn-save">Aplicar</button>
+            <button id="btn-clear" class="btn btn-clear">Limpiar</button>
+        </div>
+
+    </div>
 </div>
