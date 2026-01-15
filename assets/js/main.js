@@ -25,7 +25,8 @@ const initMenuLogic = () => {
             input.className = 'column-input';
             input.placeholder = `Columna ${index + 1}`;
             input.value = col.title;
-            
+
+
             //actualiza el array
             input.addEventListener('input', (e) => {
                 currentColumns[index].title = e.target.value;

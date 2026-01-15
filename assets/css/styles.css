@@ -195,11 +195,26 @@ footer{
         padding: 10px;
         border-radius: 10px;
         user-select: none;
-        height: 5vh;
+        height: 12vh;
+        display: flex;
+        flex-direction: column;
         /*transition: 0.3s ease;*/
         h3{
             width: 100%;
             text-align: center;
+        }
+        .limit-container{
+            display: flex;
+            flex-direction: row-reverse;
+            align-items: center;
+            justify-content: center;
+            gap:    10px;
+            .column-limit{
+                text-align: end;
+                display: flex;
+                width: 30px;
+            }
+
         }
     }
 
@@ -211,6 +226,7 @@ footer{
         border-radius: 10px;
         padding: 10px;
         background-color: var(--color-secondary);
+        transition: 0.3s ease;
         .table-row{
             display: flex;
             align-items: center;
@@ -238,19 +254,22 @@ footer{
             color: var(--color-text-clear);
         }
         .table-row.deleted {
-            background-color: var(--color-button-red-hover);
+            background-color: var(--color-button-red);
+            color: var(--color-text-clear);
             scale: 0;
         }
         .table-row.creating{
             scale: 0;
             background-color: var(--color-text-hint);
+            color: var(--color-text-clear);
         }
     }
+    .table-row-container:hover{
+        transform: translateY(-10px);
+        box-shadow: 0 10px 10px var(--color-secondary-dark);
+    }
 }
-.table-column:hover{
-    transform: translateY(-10px);
-    box-shadow: 0 10px 10px var(--color-secondary-dark);
-}
+
 
 /*preferencias*/
 #sidebar {

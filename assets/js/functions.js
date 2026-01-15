@@ -68,6 +68,46 @@ export const renderBoard = () => {
             const title = document.createElement("h3");
             title.innerHTML = `${col.title}`;
             rowHeader.appendChild(title);
+
+            if(index !== 0 && index !== appStatus.lsElements.length - 1){
+                const limitContainer = document.createElement("div");
+                limitContainer.className = "limit-container";
+
+                const inputLimit = document.createElement("input");
+                inputLimit.type = "number";
+                inputLimit.className = "column-limit";
+                inputLimit.placeholder = "límite";
+                inputLimit.value = "0";
+                inputLimit.readOnly = true;
+
+
+                const btnPlus = document.createElement("button");
+                btnPlus.className = "btn btn-counter";
+                btnPlus.innerHTML = "+";
+                btnPlus.addEventListener("click", () => {
+                    inputLimit.value ++;
+                });
+                limitContainer.appendChild(btnPlus);
+
+
+                limitContainer.appendChild(inputLimit);
+
+                const btnMinus = document.createElement("button");
+                btnMinus.className = "btn btn-counter";
+                btnMinus.innerHTML = "-";
+                btnMinus.addEventListener("click", () => {
+                    if(inputLimit.value > 0){
+                        inputLimit.value --;
+                    }
+                });
+                limitContainer.appendChild(btnMinus);
+
+                rowHeader.appendChild(limitContainer);
+            }
+
+
+
+
             column.appendChild(rowHeader);
             //-----------------------
 
@@ -138,7 +178,7 @@ export const renderBoard = () => {
                     //delay para que de tiempo a aplicar la clase que le cambia el color
                     const delay = ms => new Promise(res => setTimeout(res, ms));
                     delay(200).then(() => {
-                        if(confirm("¿Borrar esta tarea?")) {
+                        // if(confirm("¿Borrar esta tarea?")) {
                             row.classList.remove("deleting");
                             row.classList.add("deleted");
                             
@@ -147,9 +187,9 @@ export const renderBoard = () => {
                                 saveData();
                                 renderBoard();
                             });
-                        } else {
-                            row.classList.remove("deleting");
-                        }
+                        // } else {
+                        //     row.classList.remove("deleting");
+                        // }
                     });
                 });
 
