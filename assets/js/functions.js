@@ -69,38 +69,61 @@ export const renderBoard = () => {
             title.innerHTML = `${col.title}`;
             rowHeader.appendChild(title);
 
-            if(index !== 0 && index !== appStatus.lsElements.length - 1){
+            //excluye primera
+            if(index !== 0){// && index !== appStatus.lsElements.length - 1){
+                if (typeof col.limit === 'undefined') col.limit = 0;
+                if (typeof col.limitEnabled === 'undefined') col.limitEnabled = false;
+
                 const limitContainer = document.createElement("div");
                 limitContainer.className = "limit-container";
 
-                const inputLimit = document.createElement("input");
-                inputLimit.type = "number";
-                inputLimit.className = "column-limit";
-                inputLimit.placeholder = "límite";
-                inputLimit.value = "0";
-                inputLimit.readOnly = true;
+                const limitTag = document.createElement("p");
+                limitTag.innerHTML = "Max: ";
 
-
-                const btnPlus = document.createElement("button");
-                btnPlus.className = "btn btn-counter";
-                btnPlus.innerHTML = "+";
-                btnPlus.addEventListener("click", () => {
-                    inputLimit.value ++;
+                //activa/desactiva límite
+                const limitSwitch = document.createElement("input");
+                limitSwitch.type = "checkbox";
+                limitSwitch.title = "Activar límite";
+                limitSwitch.checked = col.limitEnabled;
+                limitSwitch.addEventListener("change", (e) => {
+                    col.limitEnabled = e.target.checked;
+                    saveData();
+                    renderBoard();
                 });
-                limitContainer.appendChild(btnPlus);
+                limitContainer.appendChild(limitSwitch);
+                limitContainer.appendChild(limitTag);
 
+                if (col.limitEnabled) {
+                    const btnPlus = document.createElement("button");
+                    btnPlus.className = "btn btn-counter";
+                    btnPlus.innerHTML = "+";
+                    btnPlus.addEventListener("click", () => {
+                        col.limit++;
+                        saveData();
+                        renderBoard();
+                    });
 
-                limitContainer.appendChild(inputLimit);
+                    const inputLimit = document.createElement("input");
+                    inputLimit.type = "number";
+                    inputLimit.className = "column-limit";
+                    inputLimit.placeholder = "límite";
+                    inputLimit.value = col.limit;
+                    inputLimit.readOnly = true;
 
-                const btnMinus = document.createElement("button");
-                btnMinus.className = "btn btn-counter";
-                btnMinus.innerHTML = "-";
-                btnMinus.addEventListener("click", () => {
-                    if(inputLimit.value > 0){
-                        inputLimit.value --;
-                    }
-                });
-                limitContainer.appendChild(btnMinus);
+                    const btnMinus = document.createElement("button");
+                    btnMinus.className = "btn btn-counter";
+                    btnMinus.innerHTML = "-";
+                    btnMinus.addEventListener("click", () => {
+                        if(col.limit > 0){
+                            col.limit--;
+                            saveData();
+                            renderBoard();
+                        }
+                    });
+                    limitContainer.appendChild(btnPlus);
+                    limitContainer.appendChild(inputLimit);
+                    limitContainer.appendChild(btnMinus);
+                }
 
                 rowHeader.appendChild(limitContainer);
             }
@@ -136,6 +159,13 @@ export const renderBoard = () => {
 
                 //sueltas en la misma
                 if (originColIndex === targetColIndex) return;
+
+                //comprueba límite
+                const targetCol = appStatus.lsElements[targetColIndex];
+                if (targetCol.limitEnabled && targetCol.rows && targetCol.rows.length >= targetCol.limit) {
+                    alert(`La columna "${col.title}" está llena`);
+                    return;
+                }
 
                 //mueve la tarea
                 const taskToMove = appStatus.lsElements[originColIndex].rows[originRowIndex];

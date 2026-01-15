@@ -35,7 +35,7 @@
 h1,h2,h3, label{
     font-family: "Montserrat", sans-serif;
 }
-a{
+a, p{
     text-decoration: none;
     font-family: "Mulish", sans-serif;
 }
@@ -195,10 +195,11 @@ footer{
         padding: 10px;
         border-radius: 10px;
         user-select: none;
-        height: 12vh;
+        height: 9vh;
         display: flex;
         flex-direction: column;
-        /*transition: 0.3s ease;*/
+        justify-content: center;
+        gap: 1rem;
         h3{
             width: 100%;
             text-align: center;
@@ -206,13 +207,15 @@ footer{
         .limit-container{
             display: flex;
             flex-direction: row-reverse;
-            align-items: center;
             justify-content: center;
             gap:    10px;
+            p{
+                align-self: center;
+            }
             .column-limit{
                 text-align: end;
                 display: flex;
-                width: 30px;
+                width: 40px;
             }
 
         }
@@ -240,15 +243,16 @@ footer{
             text-align: center;
             font-family: system-ui;
             font-weight: bold;
+            overflow: hidden;
         }
         .table-row:hover{
             background-color: var(--color-primary-clearer);
             scale: 1.05;
         }
-        .table-row:active{
-            /*background-color: var(--color-text-hint);*/
-            scale: 0.9;
-        }
+        /*.table-row:active{*/
+        /*    !*background-color: var(--color-text-hint);*!*/
+        /*    scale: 0.9;*/
+        /*}*/
         .table-row.deleting {
             background-color: var(--color-button-red);
             color: var(--color-text-clear);
