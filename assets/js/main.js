@@ -1,5 +1,5 @@
 //imports
-import { includeHTML, renderBoard, appStatus } from './functions.js';
+import {includeHTML, renderBoard, appStatus, setupDialogListeners, saveData, clearData} from './functions.js';
 
 
 let refreshMenuData = () => {};
@@ -37,7 +37,6 @@ const initMenuLogic = () => {
 
     //refrescar los datos del menú desde el estado global
     refreshMenuData = () => {
-        // Deep copy to avoid mutating appStatus directly before save
         currentColumns = JSON.parse(JSON.stringify(appStatus.lsElements));
         numInput.value = currentColumns.length;
         renderInputs();
@@ -66,7 +65,7 @@ const initMenuLogic = () => {
     btnSave.addEventListener('click', () => {
 
         appStatus.lsElements = currentColumns;
-        localStorage.setItem('elements', JSON.stringify(appStatus.lsElements));
+        saveData();
         
         alert('Configuración guardada.');
         
@@ -77,7 +76,7 @@ const initMenuLogic = () => {
     btnClear.addEventListener('click', () => {
         currentColumns = [];
         numInput.value = 0;
-        localStorage.clear();
+        clearData();
         renderInputs();
     });
 };
@@ -125,7 +124,13 @@ document.addEventListener('DOMContentLoaded', () => {
             refreshMenuData(); //actualiza los datos al reabrir el menú
         }
     });
-    
+
+    //renombrar
+    includeHTML("#dialog-container", "./includes/renameDialog.html")
+        .then(() =>{
+            setupDialogListeners();
+        });
+
     document.addEventListener('click', (event) => {
         if (sidebar.classList.contains('active') && 
             !sidebar.contains(event.target) && 
