@@ -108,7 +108,7 @@ export const renderBoard = () => {
 
             const title = document.createElement("h3");
             //ejemplo de output: nombreCol (9/10)
-            title.innerHTML = `${col.title} (${col.rows ? col.rows.length : 0}/${col.limit === 0 ? '∞' : col.limit})`;
+            title.innerHTML = `${col.title} (${col.rows ? col.rows.length : 0}/${col.limit === 0 ? '∞' : (col.limit === undefined ? '∞' : col.limit)})`;
 
 
 
