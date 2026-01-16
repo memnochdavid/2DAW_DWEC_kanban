@@ -130,22 +130,22 @@ a, p{
 }
 .btn-config{
     width: 20px;
-    height: 10vh;
+    height: 20px;
     background-color: transparent;
     background-image: url("../img/icon-config.png");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    transition: transform 0.4s ease, filter 0.3s ease;
+    transition: 0.4s ease;
     margin-left: auto;
     filter: brightness(0);
 }
 .btn-config:hover {
-    filter: brightness(0) invert(2);
-    transform: scale(1.05);
+    filter: brightness(0.5);
+    transform: scale(1.2);
 }
 .btn-config:active {
-    transform: scale(1.2);
+    transform: scale(0.9);
 }
 
 header{
@@ -247,6 +247,10 @@ footer{
         padding: 10px;
         background-color: var(--color-secondary);
         transition: 0.3s ease;
+        overflow: scroll;
+        /*scrollbar-color: red orange;*/
+        overflow-scrolling: auto;
+        scrollbar-width: none;
         .table-row{
             display: flex;
             align-items: center;
@@ -430,7 +434,7 @@ footer{
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 2rem;
+    gap: 1rem;
     padding: 1rem;
     background-color: var(--color-secondary-clear);
     p{
@@ -440,7 +444,8 @@ footer{
     div:first-of-type{
         display: flex;
         flex-direction: row-reverse;
-        justify-content: space-evenly;
+        justify-content: center;
+        gap: 1rem;
         input{
             width: 30px;
             display: flex;

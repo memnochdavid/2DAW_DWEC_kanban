@@ -107,7 +107,11 @@ export const renderBoard = () => {
             rowHeader.className = "table-row-header";
 
             const title = document.createElement("h3");
-            title.innerHTML = `${col.title}`;
+            //ejemplo de output: nombreCol (9/10)
+            title.innerHTML = `${col.title} (${col.rows ? col.rows.length : 0}/${col.limit === 0 ? '∞' : col.limit})`;
+
+
+
             rowHeader.appendChild(title);
 
             if (typeof col.limit === 'undefined') col.limit = 0;
