@@ -128,7 +128,7 @@ export const renderBoard = () => {
             configColumn.checked = col.limitEnabled;
             configColumn.addEventListener("click", (e) => {
                 e.preventDefault();
-                includeHTML("#dialog-container", "./includes/columnConfig.html").then(() => {
+                includeHTML("#dialog-container", "./includes/columnConfigDialog.html").then(() => {
                     const dialog = document.getElementById("dialog");
                     if (dialog) dialog.style.display = "flex";
 
@@ -224,8 +224,17 @@ export const renderBoard = () => {
                 //comprueba límite
                 const targetCol = appStatus.lsElements[targetColIndex];
                 if (targetCol.limitEnabled && targetCol.rows && targetCol.rows.length >= targetCol.limit) {
-                    alert(`La columna "${col.title}" está llena`);
+                    // alert(`La columna "${col.title}" está llena`);
+                    // return;
+
+                    //en vez de un alert, muestra un diálogo
+                    includeHTML("#dialog-container", "./includes/errorDialog.html").then(() => {
+                        setupDialogListeners();
+                        const dialog = document.getElementById("dialog");
+                        if (dialog) dialog.style.display = "flex";
+                    });
                     return;
+
                 }
 
                 //mueve la tarea
