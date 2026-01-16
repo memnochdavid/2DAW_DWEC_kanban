@@ -45,6 +45,47 @@ export const includeHTML = (selector, url) => {
         });
 };
 
+export const setupDialogListeners = () => {
+    const dialog = document.getElementById("dialog");
+    const btnRename = document.getElementById("input-rename");
+    const btnCancel = document.getElementById("input-cancel");
+    const btnClose = document.getElementById("btn-close");
+    const input = dialog ? dialog.querySelector(".window-input") : null;
+
+    const closeDialog = () => {
+        if (dialog) dialog.style.display = "none";
+        currentEdit = { colIndex: null, rowIndex: null };
+    };
+
+    if (btnRename) {
+        btnRename.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (currentEdit.colIndex !== null && currentEdit.rowIndex !== null && input) {
+                const newText = input.value.trim();
+                if (newText) {
+                    appStatus.lsElements[currentEdit.colIndex].rows[currentEdit.rowIndex] = newText;
+                    saveData();
+                    renderBoard();
+                }
+            }
+            closeDialog();
+        });
+    }
+
+    if (btnCancel) {
+        btnCancel.addEventListener("click", (e) => {
+            e.preventDefault();
+            closeDialog();
+        });
+    }
+    
+    if (btnClose) {
+        btnClose.addEventListener("click", (e) => {
+            e.preventDefault();
+            closeDialog();
+        });
+    }
+}
 
 export const renderBoard = () => {
 
@@ -52,7 +93,7 @@ export const renderBoard = () => {
     container.innerHTML = "";
 
     if(appStatus.lsElements.length === 0){
-        includeHTML("#container-main", "./includes/emptyBody.html").then(r => {});
+        includeHTML("#container-main", "./includes/emptyBody.html").then(() => {});
     }
     else{
         appStatus.lsElements.forEach((col, index) => {
@@ -69,68 +110,84 @@ export const renderBoard = () => {
             title.innerHTML = `${col.title}`;
             rowHeader.appendChild(title);
 
-            //excluye primera
-            if(index !== 0){// && index !== appStatus.lsElements.length - 1){
-                if (typeof col.limit === 'undefined') col.limit = 0;
-                if (typeof col.limitEnabled === 'undefined') col.limitEnabled = false;
+            if (typeof col.limit === 'undefined') col.limit = 0;
+            if (typeof col.limitEnabled === 'undefined') col.limitEnabled = false;
 
-                const limitContainer = document.createElement("div");
-                limitContainer.className = "limit-container";
+            // const configContainer = document.createElement("div");
+            // configContainer.className = "limit-container";
 
-                const limitTag = document.createElement("p");
-                limitTag.innerHTML = "Max: ";
+            //activa/desactiva límite
+            const configColumn = document.createElement("a");
+            configColumn.id = "show-config-column";
+            configColumn.className = "btn btn-config";
 
-                //activa/desactiva límite
-                const limitSwitch = document.createElement("input");
-                limitSwitch.type = "checkbox";
-                limitSwitch.title = "Activar límite";
-                limitSwitch.checked = col.limitEnabled;
-                limitSwitch.addEventListener("change", (e) => {
-                    col.limitEnabled = e.target.checked;
-                    saveData();
-                    renderBoard();
-                });
-                limitContainer.appendChild(limitSwitch);
-                limitContainer.appendChild(limitTag);
+            configColumn.checked = col.limitEnabled;
+            configColumn.addEventListener("click", (e) => {
+                e.preventDefault();
+                includeHTML("#dialog-container", "./includes/columnConfig.html").then(() => {
+                    const dialog = document.getElementById("dialog");
+                    if (dialog) dialog.style.display = "flex";
 
-                if (col.limitEnabled) {
-                    const btnPlus = document.createElement("button");
-                    btnPlus.className = "btn btn-counter";
-                    btnPlus.innerHTML = "+";
-                    btnPlus.addEventListener("click", () => {
-                        col.limit++;
-                        saveData();
-                        renderBoard();
-                    });
+                    const inputLimit = document.getElementById("column-limit");
+                    const btnPlus = document.getElementById("btn-plus-limit");
+                    const btnMinus = document.getElementById("btn-minus-limit");
+                    const btnSave = document.getElementById("input-limit-save");
+                    const btnCancel = document.getElementById("input-limit-cancel");
+                    const btnClose = document.getElementById("btn-close");
 
-                    const inputLimit = document.createElement("input");
-                    inputLimit.type = "number";
-                    inputLimit.className = "column-limit";
-                    inputLimit.placeholder = "límite";
-                    inputLimit.value = col.limit;
-                    inputLimit.readOnly = true;
+                    if (inputLimit) inputLimit.value = col.limit || 0;
 
-                    const btnMinus = document.createElement("button");
-                    btnMinus.className = "btn btn-counter";
-                    btnMinus.innerHTML = "-";
-                    btnMinus.addEventListener("click", () => {
-                        if(col.limit > 0){
-                            col.limit--;
+                    if (btnPlus && inputLimit) {
+                        btnPlus.addEventListener("click", () => {
+                            inputLimit.value = parseInt(inputLimit.value || 0) + 1;
+                        });
+                    }
+
+                    if (btnMinus && inputLimit) {
+                        btnMinus.addEventListener("click", () => {
+                            const val = parseInt(inputLimit.value || 0);
+                            if (val > 0) inputLimit.value = val - 1;
+                        });
+                    }
+
+                    const closeAndRestore = () => {
+                        includeHTML("#dialog-container", "./includes/renameDialog.html").then(() => {
+                            setupDialogListeners();
+                            const d = document.getElementById("dialog");
+                            if(d) d.style.display = "none";
+                        });
+                    };
+
+                    if (btnSave) {
+                        btnSave.addEventListener("click", (e) => {
+                            e.preventDefault();
+                            col.limit = parseInt(inputLimit.value || 0);
+                            col.limitEnabled = col.limit > 0;
                             saveData();
                             renderBoard();
-                        }
-                    });
-                    limitContainer.appendChild(btnPlus);
-                    limitContainer.appendChild(inputLimit);
-                    limitContainer.appendChild(btnMinus);
-                }
+                            closeAndRestore();
+                        });
+                    }
 
-                rowHeader.appendChild(limitContainer);
-            }
+                    if (btnCancel) {
+                        btnCancel.addEventListener("click", (e) => {
+                            e.preventDefault();
+                            closeAndRestore();
+                        });
+                    }
 
-
-
-
+                    if (btnClose) {
+                        btnClose.addEventListener("click", (e) => {
+                            e.preventDefault();
+                            closeAndRestore();
+                        });
+                    }
+                });
+            });
+            // configContainer.appendChild(configColumn);
+            
+            rowHeader.appendChild(configColumn);
+            
             column.appendChild(rowHeader);
             //-----------------------
 
@@ -208,18 +265,14 @@ export const renderBoard = () => {
                     //delay para que de tiempo a aplicar la clase que le cambia el color
                     const delay = ms => new Promise(res => setTimeout(res, ms));
                     delay(200).then(() => {
-                        // if(confirm("¿Borrar esta tarea?")) {
-                            row.classList.remove("deleting");
-                            row.classList.add("deleted");
-                            
-                            delay(200).then(() => {
-                                col.rows.splice(rowIndex, 1);
-                                saveData();
-                                renderBoard();
-                            });
-                        // } else {
-                        //     row.classList.remove("deleting");
-                        // }
+                        row.classList.remove("deleting");
+                        row.classList.add("deleted");
+                        
+                        delay(200).then(() => {
+                            col.rows.splice(rowIndex, 1);
+                            saveData();
+                            renderBoard();
+                        });
                     });
                 });
 
@@ -232,8 +285,8 @@ export const renderBoard = () => {
                     currentEdit = { colIndex: index, rowIndex: rowIndex };
 
                     //muestra diálogo
-                    const dialog = document.getElementById("rename-dialog");
-                    const input = dialog.querySelector(".window-input");
+                    const dialog = document.getElementById("dialog");
+                    const input = dialog ? dialog.querySelector(".window-input") : null;
 
                     if (dialog && input) {
                         input.value = rowText;
@@ -300,48 +353,6 @@ export const renderBoard = () => {
 
             container.appendChild(column);
 
-        });
-    }
-}
-
-export const setupDialogListeners = () => {
-    const dialog = document.getElementById("rename-dialog");
-    const btnRename = document.getElementById("input-rename");
-    const btnCancel = document.getElementById("input-cancel");
-    const btnClose = document.getElementById("btn-close");
-    const input = dialog ? dialog.querySelector(".window-input") : null;
-
-    const closeDialog = () => {
-        if (dialog) dialog.style.display = "none";
-        currentEdit = { colIndex: null, rowIndex: null };
-    };
-
-    if (btnRename) {
-        btnRename.addEventListener("click", (e) => {
-            e.preventDefault();
-            if (currentEdit.colIndex !== null && currentEdit.rowIndex !== null && input) {
-                const newText = input.value.trim();
-                if (newText) {
-                    appStatus.lsElements[currentEdit.colIndex].rows[currentEdit.rowIndex] = newText;
-                    saveData();
-                    renderBoard();
-                }
-            }
-            closeDialog();
-        });
-    }
-
-    if (btnCancel) {
-        btnCancel.addEventListener("click", (e) => {
-            e.preventDefault();
-            closeDialog();
-        });
-    }
-    
-    if (btnClose) {
-        btnClose.addEventListener("click", (e) => {
-            e.preventDefault();
-            closeDialog();
         });
     }
 }
