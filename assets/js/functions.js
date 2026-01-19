@@ -161,7 +161,7 @@ export const renderBoard = () => {
                     const btnMinus = document.getElementById("btn-minus-limit");
                     const btnSave = document.getElementById("input-limit-save");
                     const btnCancel = document.getElementById("input-limit-cancel");
-                    const btnClose = document.getElementById("btn-close");
+                    const btnClose = document.getElementById("btn-close-config");
 
                     if (inputLimit) inputLimit.value = col.limit || 0;
 
