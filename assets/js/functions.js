@@ -1,5 +1,7 @@
 let currentEdit = { colIndex: null, rowIndex: null };
 
+const delay = ms => new Promise(res => setTimeout(res, ms));
+
 export const loadData = () => {
     const stored = localStorage.getItem('elements');
     let elements = stored ? JSON.parse(stored) : [];
@@ -45,20 +47,34 @@ export const includeHTML = (selector, url) => {
         });
 };
 
-export const setupDialogListeners = () => {
+export const setupDialogListeners = (dialogName = "") => {
     const dialog = document.getElementById("dialog");
-    const btnRename = document.getElementById("input-rename");
-    const btnCancel = document.getElementById("input-cancel");
-    const btnClose = document.getElementById("btn-close");
+    const btnAccept = document.getElementById("input-accept".concat(dialogName));
+    const btnCancel = document.getElementById("input-cancel".concat(dialogName));
+    const btnClose = document.getElementById("btn-close".concat(dialogName));
     const input = dialog ? dialog.querySelector(".window-input") : null;
 
     const closeDialog = () => {
-        if (dialog) dialog.style.display = "none";
-        currentEdit = { colIndex: null, rowIndex: null };
+        if (dialog) {
+            const dialogContent = dialog.querySelector(".window-container");
+            if (dialogContent) {
+                dialogContent.classList.add("window-container-closing");
+                delay(200).then(() => {
+                    dialog.style.display = "none";
+                    dialogContent.classList.remove("window-container-closing");
+                    currentEdit = { colIndex: null, rowIndex: null };
+                });
+            } else {
+                dialog.style.display = "none";
+                currentEdit = { colIndex: null, rowIndex: null };
+            }
+        } else {
+            currentEdit = { colIndex: null, rowIndex: null };
+        }
     };
 
-    if (btnRename) {
-        btnRename.addEventListener("click", (e) => {
+    if (btnAccept) {
+        btnAccept.addEventListener("click", (e) => {
             e.preventDefault();
             if (currentEdit.colIndex !== null && currentEdit.rowIndex !== null && input) {
                 const newText = input.value.trim();
@@ -131,13 +147,21 @@ export const renderBoard = () => {
                 includeHTML("#dialog-container", "./includes/columnConfigDialog.html").then(() => {
                     const dialog = document.getElementById("dialog");
                     if (dialog) dialog.style.display = "flex";
+                    
+                    const dialogContent = dialog.querySelector(".window-container");
+                    if (dialogContent) {
+                        dialogContent.classList.add("window-container-opening");
+                        delay(200).then(() => {
+                            dialogContent.classList.remove("window-container-opening");
+                        });
+                    }
 
                     const inputLimit = document.getElementById("column-limit");
                     const btnPlus = document.getElementById("btn-plus-limit");
                     const btnMinus = document.getElementById("btn-minus-limit");
                     const btnSave = document.getElementById("input-limit-save");
                     const btnCancel = document.getElementById("input-limit-cancel");
-                    const btnClose = document.getElementById(".btn-close");
+                    const btnClose = document.getElementById("btn-close");
 
                     if (inputLimit) inputLimit.value = col.limit || 0;
 
@@ -155,11 +179,24 @@ export const renderBoard = () => {
                     }
 
                     const closeAndRestore = () => {
-                        includeHTML("#dialog-container", "./includes/renameDialog.html").then(() => {
-                            setupDialogListeners();
-                            const d = document.getElementById("dialog");
-                            if(d) d.style.display = "none";
-                        });
+                        const dialog = document.getElementById("dialog");
+                        const dialogContent = dialog.querySelector(".window-container");
+                        if (dialogContent) {
+                            dialogContent.classList.add("window-container-closing");
+                            delay(200).then(() => {
+                                includeHTML("#dialog-container", "./includes/renameDialog.html").then(() => {
+                                    setupDialogListeners("-rename");
+                                    const d = document.getElementById("dialog");
+                                    if(d) d.style.display = "none";
+                                });
+                            });
+                        } else {
+                            includeHTML("#dialog-container", "./includes/renameDialog.html").then(() => {
+                                setupDialogListeners("-rename");
+                                const d = document.getElementById("dialog");
+                                if(d) d.style.display = "none";
+                            });
+                        }
                     };
 
                     if (btnSave) {
@@ -193,9 +230,7 @@ export const renderBoard = () => {
             rowHeader.appendChild(configColumn);
             
             column.appendChild(rowHeader);
-            //-----------------------
 
-            //--------------------------
             const rowsContainer = document.createElement("div");
             rowsContainer.className = "table-row-container";
             column.appendChild(rowsContainer);
@@ -227,17 +262,62 @@ export const renderBoard = () => {
                     // alert(`La columna "${col.title}" está llena`);
                     // return;
 
-                    //en vez de un alert, muestra un diálogo
+                    //en vez de un alert, muestra un diálogo de ERROR
                     includeHTML("#dialog-container", "./includes/errorDialog.html").then(() => {
-                        setupDialogListeners();
                         const dialog = document.getElementById("dialog");
                         if (dialog) dialog.style.display = "flex";
+                        
+                        const dialogContent = dialog.querySelector(".window-container");
+                        if (dialogContent) {
+                            dialogContent.classList.add("window-container-opening");
+                            delay(200).then(() => {
+                                dialogContent.classList.remove("window-container-opening");
+                            });
+                        }
+
+                        const btnAccept = document.getElementById("input-accept-error");
+                        const btnClose = document.getElementById("btn-close-error");
+
+                        const closeAndRestore = () => {
+                            const dialog = document.getElementById("dialog");
+                            const dialogContent = dialog.querySelector(".window-container");
+                            if (dialogContent) {
+                                dialogContent.classList.add("window-container-closing");
+                                delay(200).then(() => {
+                                    includeHTML("#dialog-container", "./includes/renameDialog.html").then(() => {
+                                        setupDialogListeners("-rename");
+                                        const d = document.getElementById("dialog");
+                                        if(d) d.style.display = "none";
+                                    });
+                                });
+                            } else {
+                                includeHTML("#dialog-container", "./includes/renameDialog.html").then(() => {
+                                    setupDialogListeners("-rename");
+                                    const d = document.getElementById("dialog");
+                                    if(d) d.style.display = "none";
+                                });
+                            }
+                        };
+
+                        if (btnAccept) {
+                            btnAccept.addEventListener("click", (e) => {
+                                e.preventDefault();
+                                closeAndRestore();
+                            });
+                        }
+
+                        if (btnClose) {
+                            btnClose.addEventListener("click", (e) => {
+                                e.preventDefault();
+                                closeAndRestore();
+                            });
+                        }
                     });
                     return;
 
                 }
 
-                //mueve la tarea
+                //mueve la tarea a otra columna
                 const taskToMove = appStatus.lsElements[originColIndex].rows[originRowIndex];
 
                 //borra de la original
@@ -304,6 +384,14 @@ export const renderBoard = () => {
                     if (dialog && input) {
                         input.value = rowText;
                         dialog.style.display = "flex";
+                        
+                        const dialogContent = dialog.querySelector(".window-container");
+                        if (dialogContent) {
+                            dialogContent.classList.add("window-container-opening");
+                            delay(200).then(() => {
+                                dialogContent.classList.remove("window-container-opening");
+                            });
+                        }
                     }
                 });
 

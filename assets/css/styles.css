@@ -407,6 +407,7 @@ footer{
     z-index: 2000;
     user-select: none;
 }
+
 .window-container {
     background-color: var(--color-button-blue);
     padding: 5px;
@@ -418,6 +419,13 @@ footer{
     /*gap: 15px;*/
     border: 1px solid var(--color-button-blue);
     user-select: none;
+    transition: 0.3s ease;
+}
+.window-container-opening{
+    scale: 0;
+}
+.window-container-closing{
+    scale: 0;
 }
 .window-border {
     display: flex;

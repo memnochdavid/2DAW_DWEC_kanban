@@ -1,7 +1,7 @@
 //imports
 import {includeHTML, renderBoard, appStatus, setupDialogListeners, saveData, clearData} from './functions.js';
 
-
+const delay = ms => new Promise(res => setTimeout(res, ms));
 let refreshMenuData = () => {};
 
 //lógica del menú de preferencias
@@ -68,8 +68,51 @@ const initMenuLogic = () => {
         appStatus.lsElements = currentColumns;
         saveData();
         
-        alert('Configuración guardada.');
-        
+        // alert('Configuración guardada.');
+        //------------
+
+        //muestra diálogo SUCCESS
+        includeHTML("#dialog-container", "./includes/successSaveDialog.html").then(() => {
+            const dialog = document.getElementById("dialog");
+            if (dialog) dialog.style.display = "flex";
+            dialog.children.namedItem("success-dialog").classList.add("window-container-opening")
+            delay(200).then(() => {
+                dialog.children.namedItem("success-dialog").classList.remove("window-container-opening")
+            });
+
+            const btnAccept = document.getElementById("input-accept-success");
+            const btnClose = document.getElementById("btn-close-success");
+
+            const closeAndRestore = () => {
+                const dialog = document.getElementById("dialog");
+                dialog.children.namedItem("success-dialog").classList.add("window-container-closing");
+                delay(200).then(() => {
+                    includeHTML("#dialog-container", "./includes/renameDialog.html").then(() => {
+                        setupDialogListeners("-rename");
+                        const d = document.getElementById("dialog");
+                        if(d) d.style.display = "none";
+                    });
+                });
+            };
+
+            if (btnAccept) {
+                btnAccept.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    closeAndRestore();
+                });
+            }
+
+            if (btnClose) {
+                
+                btnClose.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    closeAndRestore();
+                });
+            }
+        });
+
+        //------------
+
         renderBoard();
     });
 
@@ -129,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
     //renombrar
     includeHTML("#dialog-container", "./includes/renameDialog.html")
         .then(() =>{
-            setupDialogListeners();
+            setupDialogListeners("-rename");
         });
 
     document.addEventListener('click', (event) => {
