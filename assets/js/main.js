@@ -140,6 +140,8 @@ document.addEventListener('DOMContentLoaded', () => {
         menuBtn.classList.remove('rotate');
     };
 
+
+    //abrir menú
     menuBtn.addEventListener('click', () => {
         //si el menú está abierto, lo cierra
         if (sidebar.classList.contains('active')) {

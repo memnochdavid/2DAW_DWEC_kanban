@@ -3,6 +3,7 @@ let currentEdit = { colIndex: null, rowIndex: null };
 const delay = ms => new Promise(res => setTimeout(res, ms));
 
 export const loadData = () => {
+    //lee de localstorage
     const stored = localStorage.getItem('elements');
     let elements = stored ? JSON.parse(stored) : [];
     //convierte strings a objetos si es necesario
@@ -23,6 +24,7 @@ export const appStatus = {
 }
 
 export const saveData = () => {
+    //guarda en localstorage
     localStorage.setItem('elements', JSON.stringify(appStatus.lsElements));
 };
 
@@ -83,6 +85,13 @@ export const setupDialogListeners = (dialogName = "") => {
                     saveData();
                     renderBoard();
                 }
+            } else if (currentEdit.colIndex !== null && currentEdit.rowIndex === null && input) {
+                const newText = input.value.trim();
+                if (newText) {
+                    appStatus.lsElements[currentEdit.colIndex].title = newText;
+                    saveData();
+                    renderBoard();
+                }
             }
             closeDialog();
         });
@@ -127,6 +136,25 @@ export const renderBoard = () => {
             title.innerHTML = `${col.title} (${col.rows ? col.rows.length : 0}/${col.limit === 0 ? '∞' : (col.limit === undefined ? '∞' : col.limit)})`;
 
 
+            //renombra la columna
+            title.addEventListener("dblclick", () => {
+                currentEdit = { colIndex: index, rowIndex: null };
+                const dialog = document.getElementById("dialog");
+                const input = dialog ? dialog.querySelector(".window-input") : null;
+
+                if (dialog && input) {
+                    input.value = col.title;
+                    dialog.style.display = "flex";
+                    
+                    const dialogContent = dialog.querySelector(".window-container");
+                    if (dialogContent) {
+                        dialogContent.classList.add("window-container-opening");
+                        delay(200).then(() => {
+                            dialogContent.classList.remove("window-container-opening");
+                        });
+                    }
+                }
+            });
 
             rowHeader.appendChild(title);
 
@@ -342,7 +370,7 @@ export const renderBoard = () => {
                 //texto
                 const textSpan = document.createElement("span");
                 textSpan.innerText = rowText;
-                textSpan.style.flexGrow = "1"; //para que ocupe el espacio disponible
+                // textSpan.style.flexGrow = "1"; //para que ocupe el espacio disponible
                 row.appendChild(textSpan);
 
                 //borrar
@@ -427,7 +455,7 @@ export const renderBoard = () => {
                 newRowBtn.addEventListener("click", () => {
                     //añade la nueva fila al modelo
                     if (!col.rows) col.rows = [];
-                    const newRowText = "Nueva Tarea";
+                    const newRowText = "Nueva";
                     col.rows.push(newRowText);
 
                     saveData();

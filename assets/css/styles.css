@@ -1,10 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap');
 
 :root{
-    --color-primary: #4cb8ec;
-    --color-primary-dark: #3c92bb;
-    --color-primary-clear: #7bc9ef;
-    --color-primary-clearer: #b4e3fb;
+    --color-primary: #5a84a4;
+    --color-primary-dark: #283b49;
+    --color-primary-clear: #6f9dc0;
+    --color-primary-clearer: #8fbcde;
     --color-secondary: #d9d6d6;
     --color-secondary-clear: #efe5e5;
     --color-secondary-dark: #9d9b9b;
@@ -220,6 +220,26 @@ footer{
         h3{
             flex:1;
             text-align: center;
+            transition: 0.3s ease;
+        }
+        h3:hover{
+            /*scale: 2;*/
+            /*cursor: progress;*/
+            color: transparent;
+            position: relative;
+            &::after{
+                content: "Dblclick edita";
+                position: absolute;
+                left: 0;
+                width: 100%;
+                color: var(--color-text-hint);
+                background-color: var(--color-text-hint-background);
+                text-align: center;
+                /*font-size: 0.5em;*/
+                font-weight: bold;
+                cursor: text;
+                /*letter-spacing: 2px;*/
+            }
         }
         .limit-container{
             display: flex;
@@ -265,6 +285,29 @@ footer{
             font-family: system-ui;
             font-weight: bold;
             overflow: hidden;
+            cursor: grab;
+            span{
+                transition: 0.3s ease;
+                cursor: text;
+                /*width: 100%;*/
+            }
+            span:hover{
+                cursor: text;
+                color: transparent;
+                position: relative;
+                &::after{
+                    content: "Editar";
+                    position: absolute;
+                    left: 0;
+                    width: 100%;
+                    color: var(--color-text-hint);
+                    background-color: var(--color-text-hint-background);
+                    text-align: center;
+                    /*font-size: 0.5em;*/
+                    font-weight: bold;
+                    /*letter-spacing: 2px;*/
+                }
+            }
         }
         .table-row:hover{
             background-color: var(--color-primary-clearer);
