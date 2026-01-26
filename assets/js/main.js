@@ -48,7 +48,8 @@ const initMenuLogic = () => {
 
     //más
     btnInc.addEventListener('click', () => {
-        currentColumns.push({ title: '', rows: [] }); //nueva columna
+        //nueva col con nombre por defecto para que no se creen vacías
+        currentColumns.push({ title: 'Nueva', rows: [] }); //nueva columna
         numInput.value = currentColumns.length;
         renderInputs();
     });
